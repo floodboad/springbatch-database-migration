@@ -1,11 +1,16 @@
 package com.ngyewkong.springbatchdatabasemigration.config;
 
+import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.LocalEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 
+import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 @Configuration
@@ -50,6 +55,49 @@ public class DatabaseConfig {
         return migrationDataSourceProperties()
                 .initializeDataSourceBuilder()
                 .build();
+    }
+
+    // setting up the EntityManagerFactory for postgresql & mysql
+    // required for JPA
+    // used in JPA Item Reader and Writer
+    // must be public
+    @Bean
+    public EntityManagerFactory postgresqlEntityManagerFactory() {
+        // using LocalContainerEntityManagerFactoryBean
+        LocalContainerEntityManagerFactoryBean lem = new LocalContainerEntityManagerFactoryBean();
+
+        lem.setDataSource(sourceDataSource());
+        // scan packages for all the entity classes in postgresql
+        lem.setPackagesToScan("com.ngyewkong.springbatchdatabasemigration.entity.postgresql");
+        // using Hibernate along with jpa
+        lem.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
+        // set the PersistenceProviderClass (using Hibernate so point to HibernatePersistenceProvider)
+        lem.setPersistenceProviderClass(HibernatePersistenceProvider.class);
+        // set the properties before returning the object
+        lem.afterPropertiesSet();
+
+        // return the object of the LocalContainerEntityManagerFactoryBean which is an EntityManagerFactory
+        return lem.getObject();
+    }
+
+    // mysql EntityManagerFactory
+    @Bean
+    public EntityManagerFactory mysqlEntityManagerFactory() {
+        // using LocalContainerEntityManagerFactoryBean
+        LocalContainerEntityManagerFactoryBean lem = new LocalContainerEntityManagerFactoryBean();
+
+        lem.setDataSource(migrationDataSource());
+        // scan packages for all the entity classes in mysql
+        lem.setPackagesToScan("com.ngyewkong.springbatchdatabasemigration.entity.mysql");
+        // using Hibernate along with jpa
+        lem.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
+        // set the PersistenceProviderClass (using Hibernate so point to HibernatePersistenceProvider)
+        lem.setPersistenceProviderClass(HibernatePersistenceProvider.class);
+        // set the properties before returning the object
+        lem.afterPropertiesSet();
+
+        // return the object of the LocalContainerEntityManagerFactoryBean which is an EntityManagerFactory
+        return lem.getObject();
     }
 
 }
