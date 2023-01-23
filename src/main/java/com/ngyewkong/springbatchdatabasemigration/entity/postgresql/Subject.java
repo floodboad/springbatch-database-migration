@@ -11,7 +11,6 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "subjects_learning")
 public class Subject {
-
     @Id
     private Long id;
 
