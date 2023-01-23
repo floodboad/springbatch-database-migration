@@ -7,6 +7,11 @@
   - student Table
   - subjects_learning Table
 - Spring Batch Metadata DB: MySQL
+- Migration order matters 
+  - student is parent table
+  - subjects_learning has FK tagged to parent table
+  - hence student table needs to be migrated first 
+  - if not will have error when migrating subjects_learning
 - Fill application.properties with your own db credentials
 
 ## End Points:

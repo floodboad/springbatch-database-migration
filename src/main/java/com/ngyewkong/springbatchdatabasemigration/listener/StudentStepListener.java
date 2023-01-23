@@ -2,9 +2,7 @@ package com.ngyewkong.springbatchdatabasemigration.listener;
 
 import com.ngyewkong.springbatchdatabasemigration.entity.postgresql.Student;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.JDBCException;
 import org.springframework.batch.core.SkipListener;
-import org.springframework.batch.core.StepListener;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
