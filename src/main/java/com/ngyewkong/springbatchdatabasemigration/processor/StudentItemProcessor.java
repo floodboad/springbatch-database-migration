@@ -18,6 +18,7 @@ public class StudentItemProcessor implements ItemProcessor<Student, com.ngyewkon
         mysqlStudent.setFirstName(postgresStudent.getFirstName());
         mysqlStudent.setLastName(postgresStudent.getLastName());
         mysqlStudent.setEmail(postgresStudent.getEmail());
+        mysqlStudent.setDeptId(postgresStudent.getDeptId());
 
         // rmb data type mismatch of isActive in postgres and mysql
         mysqlStudent.setIsActive(postgresStudent.getIsActive() != null && Boolean.parseBoolean(postgresStudent.getIsActive()));

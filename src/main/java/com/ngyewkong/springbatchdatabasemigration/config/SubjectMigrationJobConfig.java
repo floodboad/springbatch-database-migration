@@ -13,6 +13,7 @@ import org.springframework.batch.item.database.JpaCursorItemReader;
 import org.springframework.batch.item.database.JpaItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -58,7 +59,7 @@ public class SubjectMigrationJobConfig {
     public Step subjectMigrationChunkStep() {
         return stepBuilderFactory.get("subject_migration_step")
                 .<Subject, com.ngyewkong.springbatchdatabasemigration.entity.mysql.Subject>chunk(100)
-                .reader(subjectJpaCursorItemReader())
+                .reader(subjectJpaCursorItemReader(null, null))
                 .processor(subjectItemProcessor)
                 .writer(subjectJpaItemWriter())
                 .faultTolerant()
@@ -76,7 +77,9 @@ public class SubjectMigrationJobConfig {
     // Subject Item Reader
     @Bean
     @StepScope
-    public JpaCursorItemReader<Subject> subjectJpaCursorItemReader() {
+    public JpaCursorItemReader<Subject> subjectJpaCursorItemReader(
+            @Value("#{jobParameters['currSubjCount']}") Integer currentSubjectCount,
+            @Value("#{jobParameters['maxSubjCount']}") Integer maxSubjectCount) {
         JpaCursorItemReader<Subject> jpaCursorItemReader = new JpaCursorItemReader<>();
 
         // set the source emf which has the setup config in DatabaseConfig
@@ -86,6 +89,10 @@ public class SubjectMigrationJobConfig {
         // From the Subject Entity class
         // follows the mapping in entity not db
         jpaCursorItemReader.setQueryString("From Subject");
+
+        // making the read to be dynamic via job Parameters to set how many records to read per rest call
+        jpaCursorItemReader.setCurrentItemCount(currentSubjectCount);
+        jpaCursorItemReader.setMaxItemCount(maxSubjectCount);
 
         return jpaCursorItemReader;
     }
