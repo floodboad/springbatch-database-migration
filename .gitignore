@@ -31,3 +31,9 @@ build/
 
 ### VS Code ###
 .vscode/
+
+src/main/resources/application.properties
+
+src/main/java/com/ngyewkong/.DS_Store
+
+.DS_Store
