@@ -22,7 +22,7 @@ public class JobController {
     @Autowired
     private MigrationJobService migrationJobService;
 
-    // GetMapping with route /api/v1/job/start/{jobName}
+    // GetMapping with route /api/v1/job/start/{jobName} -> student or subject
     // {jobName} is being accessed using @PathVariable annotation jobName will be populated by {jobName}
     // @RequestBody will pass the json body into the List<JobParamsRequest>
     @GetMapping("start/{jobName}")
@@ -31,7 +31,7 @@ public class JobController {
 
         migrationJobService.startJob(jobName, jobParamsList);
 
-        return jobName + " started...";
+        return jobName + "_migration_job started...";
     }
 
     // Stop Job
