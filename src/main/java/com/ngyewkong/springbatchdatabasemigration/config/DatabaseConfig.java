@@ -6,8 +6,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.orm.jpa.LocalEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 
 import javax.persistence.EntityManagerFactory;
@@ -81,7 +81,9 @@ public class DatabaseConfig {
     }
 
     // mysql EntityManagerFactory
+    // rmb to set one of the emf with @Primary for spring to autowire properly
     @Bean
+    @Primary
     public EntityManagerFactory mysqlEntityManagerFactory() {
         // using LocalContainerEntityManagerFactoryBean
         LocalContainerEntityManagerFactoryBean lem = new LocalContainerEntityManagerFactoryBean();
@@ -98,6 +100,20 @@ public class DatabaseConfig {
 
         // return the object of the LocalContainerEntityManagerFactoryBean which is an EntityManagerFactory
         return lem.getObject();
+    }
+
+    // TransactionManager Bean rmb to set primary
+    @Bean
+    @Primary
+    public JpaTransactionManager jpaTransactionManager() {
+        JpaTransactionManager jpaTransactionManager = new JpaTransactionManager();
+
+        // transaction is for the migration destination db -> mysql for this
+        // set the datasource and emf to the destination db datasource and emf
+        jpaTransactionManager.setDataSource(migrationDataSource());
+        jpaTransactionManager.setEntityManagerFactory(mysqlEntityManagerFactory());
+
+        return jpaTransactionManager;
     }
 
 }
